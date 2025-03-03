@@ -1,9 +1,12 @@
 namespace ECommerce.Core.DTO;
 
 public record AuthenticationResponse(
-    Guid UserId, 
-    string? Email, 
+    Guid UserId,
+    string? Email,
     string? PersonName,
     string? Gender,
     string? Token,
-    bool Success);
+    bool Success)
+{
+    public AuthenticationResponse(): this(default, default, default, default, default, default){}
+};
