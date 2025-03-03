@@ -11,7 +11,7 @@ public static class DependencyInjection
     /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddSingleton<IUserRepository, UsersRepository>();
+        services.AddTransient<IUserRepository, UsersRepository>();
 
         return services;
     }
