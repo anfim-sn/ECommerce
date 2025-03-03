@@ -1,3 +1,4 @@
+using ECommerce.Api.Middlewares;
 using ECommerce.Core;
 using ECommerce.Infrastructure;
 
@@ -13,6 +14,9 @@ builder.Services.AddControllers();
 // Build the app.
 var app = builder.Build();
 
+// Add middlewares
+app.UseExceptionHandlingMiddleware();
+
 //Routing
 app.UseRouting();
 
@@ -22,5 +26,6 @@ app.UseAuthorization();
 
 //Controller routes
 app.MapControllers();
+
 app.MapGet("/", () => "Hello World!");
 app.Run();
