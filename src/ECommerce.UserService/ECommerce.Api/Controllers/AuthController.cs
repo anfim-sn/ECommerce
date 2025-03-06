@@ -18,7 +18,7 @@ public class AuthController(IUsersService usersService) : ControllerBase
         var authenticationResponse = await usersService.Login(loginRequest);
 
         if (authenticationResponse == null || !authenticationResponse.Success)
-            return BadRequest(authenticationResponse);
+            return Unauthorized(authenticationResponse);
 
         return Ok(authenticationResponse);
     }
@@ -32,7 +32,7 @@ public class AuthController(IUsersService usersService) : ControllerBase
         var authenticationResponse = await usersService.Register(registerRequest);
         
         if (authenticationResponse == null || !authenticationResponse.Success)
-            return Unauthorized(authenticationResponse);
+            return BadRequest(authenticationResponse);
 
         return Ok(authenticationResponse);
     }
