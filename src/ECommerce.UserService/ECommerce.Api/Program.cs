@@ -3,6 +3,7 @@ using ECommerce.Api.Middlewares;
 using ECommerce.Core;
 using ECommerce.Core.Mappers;
 using ECommerce.Infrastructure;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,9 @@ builder.Services.AddControllers()
 
 //Take All profiles from Assembly inherited from Profile interface
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+//Add FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
 
 // Build the app.
 var app = builder.Build();
