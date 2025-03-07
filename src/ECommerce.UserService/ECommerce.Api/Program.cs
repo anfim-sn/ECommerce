@@ -48,6 +48,7 @@ app.UseRouting();
 //Add endpoints for swagger.json
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseCors();
 
 //Auth
 app.UseAuthentication();
@@ -55,5 +56,6 @@ app.UseAuthorization();
 
 //Controller routes
 app.MapControllers();
+
 
 app.Run();
