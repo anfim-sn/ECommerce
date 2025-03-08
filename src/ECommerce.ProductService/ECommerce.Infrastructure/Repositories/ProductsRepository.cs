@@ -1,3 +1,4 @@
+using ECommerce.Core.Entities;
 using ECommerce.Core.RepositoryContracts;
 using ECommerce.Infrastructure.dbcontext;
 
@@ -5,15 +6,28 @@ namespace ECommerce.Infrastructure.Repositories;
 
 internal class ProductsRepository(DapperDbContext DbContext) : IProductRepository
 {
-    // public async Task<Product?> AddUser(Product user)
-    // {
-    //     user.UserId = Guid.NewGuid();
-    //
-    //     const string query = "INSERT INTO \"public\".\"Users\" (\"UserId\", \"Email\", \"PersonName\", \"Gender\", \"Password\") " +
-    //                          "VALUES (@UserId, @Email, @PersonName, @Gender, @Password);";
-    //
-    //     var rowAffected = await DbContext.DbConnection.ExecuteAsync(query, user);
-    //     
-    //     return rowAffected > 0 ? user : null;
-    // }
+    public Task<List<Product>> GetListAsync()
+    {
+        throw new NotImplementedException();
+    }
+    public Task<Product> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<List<Product>> SearchAsync(string searchString)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<object> AddAsync(Product map)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<object> UpdateAsync(Product map)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<bool> DeleteByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
 }
