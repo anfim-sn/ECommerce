@@ -9,6 +9,7 @@ internal class ProductsRepository(DapperDbContext DbContext) : IProductRepositor
     public Task<List<Product>> GetListAsync()
     {
         throw new NotImplementedException();
+        
     }
     public Task<Product> GetByIdAsync(int id)
     {
