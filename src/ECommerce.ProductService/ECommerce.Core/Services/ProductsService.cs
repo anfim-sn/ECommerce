@@ -14,7 +14,7 @@ internal class ProductsService(IProductRepository productRepository, IMapper map
         return await productRepository.GetListAsync();
     }
     
-    public async Task<Product> GetByIdAsync(int id)
+    public async Task<Product?> GetByIdAsync(Guid id)
     {
         return await productRepository.GetByIdAsync(id);
     }
@@ -24,18 +24,26 @@ internal class ProductsService(IProductRepository productRepository, IMapper map
     }
     public async Task<ProductResponse> AddAsync(ProductRequest product)
     {
-        var result = await productRepository.AddAsync(mapper.Map<Product>(product));
+        var isSuccess = false;
+        var affectedRow = await productRepository.AddAsync(mapper.Map<Product>(product));
         
-        return mapper.Map<ProductResponse>(product) with{ IsSuccess = true };
+        if (affectedRow > 0)
+            isSuccess = true;
+        
+        return mapper.Map<ProductResponse>(product) with { IsSuccess = isSuccess };
     }
     
     public async Task<ProductResponse> UpdateAsync(ProductRequest product)
     {
-        var result = await productRepository.UpdateAsync(mapper.Map<Product>(product));
+        var isSuccess = false;
+        var affectedRow = await productRepository.UpdateAsync(mapper.Map<Product>(product));
+
+        if (affectedRow > 0)
+            isSuccess = true;
         
-        return mapper.Map<ProductResponse>(product) with{ IsSuccess = true };
+        return mapper.Map<ProductResponse>(product) with{ IsSuccess = isSuccess };
     }
-    public async Task<bool> DeleteByIdAsync(int id)
+    public async Task<bool> DeleteByIdAsync(Guid id)
     {
         return await productRepository.DeleteByIdAsync(id);
     }

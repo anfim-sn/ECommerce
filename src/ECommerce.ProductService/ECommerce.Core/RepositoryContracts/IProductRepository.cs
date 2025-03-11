@@ -6,9 +6,9 @@ namespace ECommerce.Core.RepositoryContracts;
 public interface IProductRepository
 {
     Task<List<Product>> GetListAsync();
-    Task<Product> GetByIdAsync(int id);
+    Task<Product?> GetByIdAsync(Guid id);
     Task<List<Product>> SearchAsync(string searchString);
-    Task<object> AddAsync(Product map);
-    Task<object> UpdateAsync(Product map);
-    Task<bool> DeleteByIdAsync(int id);
+    Task<int> AddAsync(Product product);
+    Task<int> UpdateAsync(Product product);
+    Task<bool> DeleteByIdAsync(Guid id);
 }

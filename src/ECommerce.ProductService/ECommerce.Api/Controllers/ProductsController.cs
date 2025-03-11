@@ -17,9 +17,9 @@ public class ProductsController(IProductsService productsService) : ControllerBa
     }
     
     [HttpGet("search/productid/{productId}")] //GET api/products/search/productid/{productId}
-    public async Task<IActionResult> GetProduct(int id)
+    public async Task<IActionResult> GetProduct(Guid productId)
     {
-        var product = await productsService.GetByIdAsync(id);
+        var product = await productsService.GetByIdAsync(productId);
         
         if (product == null)
             return NotFound();
@@ -57,9 +57,9 @@ public class ProductsController(IProductsService productsService) : ControllerBa
     }
     
     [HttpDelete("{productId}")] //DELETE api/products/{productId}
-    public async Task<IActionResult> DeleteProduct(int id)
+    public async Task<IActionResult> DeleteProduct(Guid productId)
     {
-        var result = await productsService.DeleteByIdAsync(id);
+        var result = await productsService.DeleteByIdAsync(productId);
         
         if (!result)
             return NotFound();

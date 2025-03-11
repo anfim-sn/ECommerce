@@ -4,6 +4,6 @@ public record ProductRequest(
     Guid ProductId,
     string ProductName,
     string Category,
-    int UnitPrice,
+    decimal UnitPrice,
     int QuantityInStock
     );
