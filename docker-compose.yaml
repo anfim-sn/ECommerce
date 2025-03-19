@@ -1,0 +1,39 @@
+version: '3.8'
+name: ecommerse
+services:
+  postgres:
+    image: postgres:15.6
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - ./local/postgresql:/var/lib/postgresql/data
+      - ./local/postgresql/init:/docker-entrypoint-initdb.d
+    environment:
+      PGDATA: /var/lib/postgresql/data/ecommerse/
+      POSTGRES_DB: ecommerse
+      POSTGRES_USER: db
+      POSTGRES_PASSWORD: 1234
+      
+  product-service:
+    build:
+      context: .
+      dockerfile: ./src/ECommerce.ProductService/ECommerce.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    expose:
+        - 8080
+    depends_on:
+      - postgres
+    
+  user-service:
+    build:
+      context: .
+      dockerfile: ./src/ECommerce.UserService/ECommerce.Api/Dockerfile
+    ports:
+      - "8081:8080"
+    expose:
+      - 8081
+    depends_on:
+      - postgres
