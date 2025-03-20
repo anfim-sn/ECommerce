@@ -3,7 +3,9 @@ using ECommerce.Api.Middlewares;
 using ECommerce.Core;
 using ECommerce.Core.Mappers;
 using ECommerce.Infrastructure;
+using ECommerce.Infrastructure.dbcontext;
 using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,9 @@ builder.Services.AddCors(o =>
 
 // Build the app.
 var app = builder.Build();
+
+var context = app.Services.GetRequiredService<ProductDbContext>();
+context.Database.Migrate();
 
 // Add middlewares
 app.UseExceptionHandlingMiddleware();

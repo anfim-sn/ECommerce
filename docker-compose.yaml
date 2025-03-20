@@ -17,9 +17,10 @@ services:
       POSTGRES_PASSWORD: 1234
       
   product-service:
+    image: product-service
     build:
-      context: .
-      dockerfile: ./src/ECommerce.ProductService/ECommerce.Api/Dockerfile
+      context: ./src/ECommerce.ProductService
+      dockerfile: ECommerce.Api/Dockerfile
     ports:
       - "8080:8080"
     expose:
@@ -28,9 +29,10 @@ services:
       - postgres
     
   user-service:
+    image: user-service
     build:
-      context: .
-      dockerfile: ./src/ECommerce.UserService/ECommerce.Api/Dockerfile
+      context: ./src/ECommerce.UserService
+      dockerfile: ECommerce.Api/Dockerfile
     ports:
       - "8081:8080"
     expose:

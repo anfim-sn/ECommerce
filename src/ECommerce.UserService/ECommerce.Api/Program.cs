@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
+using Dapper;
 using ECommerce.Api.Middlewares;
 using ECommerce.Core;
 using ECommerce.Core.Mappers;
 using ECommerce.Infrastructure;
+using ECommerce.Infrastructure.dbcontext;
 using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +40,9 @@ builder.Services.AddCors(o =>
 
 // Build the app.
 var app = builder.Build();
+
+var context = app.Services.GetRequiredService<DapperDbContext>();
+context.DbConnection.ExecuteAsync("IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'Users')    \n    CREATE TABLE public.'Users'\n    (\n        UserId     UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),\n        Email      VARCHAR(255) UNIQUE NOT NULL,\n        Password   TEXT                NOT NULL,\n        PersonName VARCHAR(255),\n        Gender     VARCHAR(50)\n    );");
 
 // Add middlewares
 app.UseExceptionHandlingMiddleware();
