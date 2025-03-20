@@ -41,8 +41,7 @@ builder.Services.AddCors(o =>
 // Build the app.
 var app = builder.Build();
 
-var context = app.Services.GetRequiredService<DapperDbContext>();
-context.DbConnection.ExecuteAsync("IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'Users')    \n    CREATE TABLE public.'Users'\n    (\n        UserId     UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),\n        Email      VARCHAR(255) UNIQUE NOT NULL,\n        Password   TEXT                NOT NULL,\n        PersonName VARCHAR(255),\n        Gender     VARCHAR(50)\n    );");
+await ApplyMigrations(app.Services);
 
 // Add middlewares
 app.UseExceptionHandlingMiddleware();
@@ -62,5 +61,14 @@ app.UseAuthorization();
 //Controller routes
 app.MapControllers();
 
-
 app.Run();
+
+async Task ApplyMigrations(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<DapperDbContext>();
+
+    context.DbConnection.Open();
+    var a = await context.DbConnection.ExecuteAsync("CREATE TABLE IF NOT EXISTS \"Users\"\n    (\n        \"UserId\"     UUID PRIMARY KEY NOT NULL,\n        \"Email\"      VARCHAR(255) UNIQUE NOT NULL,\n        \"Password\"   TEXT                NOT NULL,\n        \"PersonName\" VARCHAR(255),\n        \"Gender\"     VARCHAR(50)\n    );");
+    context.DbConnection.Close();
+}

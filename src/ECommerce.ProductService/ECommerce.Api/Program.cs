@@ -41,9 +41,6 @@ builder.Services.AddCors(o =>
 // Build the app.
 var app = builder.Build();
 
-var context = app.Services.GetRequiredService<ProductDbContext>();
-context.Database.Migrate();
-
 // Add middlewares
 app.UseExceptionHandlingMiddleware();
 
@@ -62,5 +59,10 @@ app.UseAuthorization();
 //Controller routes
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
+    dbContext.Database.Migrate();// Применяет все миграции
+}
 
 app.Run();
