@@ -16,10 +16,15 @@ public static class DependencyInjection
     {
         services.AddTransient<IProductRepository, ProductsRepository>();
 
-        services.AddDbContextFactory<ProductDbContext>((provider, options) =>
-            options.UseNpgsql(provider.GetRequiredService<IConfiguration>()
-                    .GetConnectionString("PostgreSQLConnection"),
-                o => o.MigrationsAssembly("ECommerce.Infrastructure")));
+        services.AddDbContextFactory<ProductDbContext>((provider, options) => {
+            var connectionStringTemplate = provider.GetRequiredService<IConfiguration>()
+                .GetConnectionString("PostgreSQLConnection")!;
+            var connectionString = connectionStringTemplate
+                .Replace("$POSTGRES_HOST", Environment.GetEnvironmentVariable("POSTGRES_HOST"))
+                .Replace("$POSTGRES_USERNAME", Environment.GetEnvironmentVariable("POSTGRES_USERNAME"))
+                .Replace("$POSTGRES_PASSWORD", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"));
+            options.UseNpgsql(connectionString, o => o.MigrationsAssembly("ECommerce.Infrastructure"));
+        });
         
         return services;
     }

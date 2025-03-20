@@ -62,7 +62,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
-    dbContext.Database.Migrate();// Применяет все миграции
+    dbContext.Database.Migrate();
 }
 
 app.Run();
