@@ -1,3 +1,4 @@
+using System.Reflection;
 using BusinessLogicLayer.ServiceContracts;
 using BusinessLogicLayer.Services;
 using FluentValidation;
@@ -10,9 +11,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddBusinessLogicLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<IOrderService, OrderService>();
-        
         services.AddValidatorsFromAssembly(typeof(OrderAddRequestValidator).Assembly);
+
+        services.AddAutoMapper(typeof(MappingProfile).Assembly);
+        
+        services.AddScoped<IOrderService, OrderService>();
         
         return services;
     }

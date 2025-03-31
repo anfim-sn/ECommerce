@@ -9,7 +9,7 @@ using MongoDB.Driver;
 namespace BusinessLogicLayer.Services;
 
 public class OrderService(
-    IOrderRepository orderRepository, 
+    IOrderRepository ordersRepository, 
     IMapper mapper, 
     IValidator<OrderAddRequest> orderAddRequestValidator,
     IValidator<OrderItemAddRequest> orderItemAddRequestValidator,
@@ -18,21 +18,25 @@ public class OrderService(
     ) : IOrderService
 {
 
-    public async Task<IEnumerable<OrderResponse>> GetOrders()
+    public async Task<List<OrderResponse>> GetOrders()
     {
-        var orders = await orderRepository.GetOrders();
-        return mapper.Map<List<OrderResponse>>(orders);
+        var orders = await ordersRepository.GetOrders();
+        return mapper.Map<IEnumerable<OrderResponse>>(orders).ToList();
     }
     
-    public async Task<IEnumerable<OrderResponse?>> GetOrdersByCondition(FilterDefinition<Order> filter)
+    public async Task<List<OrderResponse?>> GetOrdersByCondition(FilterDefinition<Order> filter)
     {
-        var orders = await orderRepository.GetOrdersByCondition(filter);
-        return mapper.Map<List<OrderResponse>>(orders);
+        var orders = await ordersRepository.GetOrdersByCondition(filter);
+        return mapper.Map<IEnumerable<OrderResponse?>>(orders).ToList();
     }
     
     public async Task<OrderResponse?> GetOrderByCondition(FilterDefinition<Order> filter)
     {
-        var order = await orderRepository.GetOrderByCondition(filter);
+        var order = await ordersRepository.GetOrderByCondition(filter);
+
+        if (order == null)
+            return null;
+        
         return mapper.Map<OrderResponse>(order);
     }
     
@@ -64,7 +68,7 @@ public class OrderService(
 
         orderEntity.TotalBill = orderEntity.OrderItems.Sum(x => x.TotalPrice);
         
-        var result = await orderRepository.AddOrder(orderEntity);
+        var result = await ordersRepository.AddOrder(orderEntity);
         
         if (result == null)
             return null;
@@ -99,7 +103,7 @@ public class OrderService(
 
         orderEntity.TotalBill = orderEntity.OrderItems.Sum(x => x.TotalPrice);
         
-        var result = await orderRepository.UpdateOrder(orderEntity);
+        var result = await ordersRepository.UpdateOrder(orderEntity);
 
         if (result == null)
             return null;
@@ -109,6 +113,13 @@ public class OrderService(
     
     public async Task<bool> DeleteOrder(Guid orderId)
     {
-        return await orderRepository.DeleteOrder(orderId);
+        var filter = Builders<Order>.Filter.Eq(x => x.OrderId, orderId);
+        
+        var order = await ordersRepository.GetOrderByCondition(filter);
+        
+        if (order == null)
+            return false;
+        
+        return await ordersRepository.DeleteOrder(orderId);
     }
 }
