@@ -10,10 +10,10 @@ public class Order
     public Guid _id { get; set; }
     
     [BsonRepresentation(BsonType.String)]
-    public Guid OrderId { get; set; }
+    public Guid OrderID { get; set; }
     
     [BsonRepresentation(BsonType.String)]
-    public Guid UserId { get; set; }
+    public Guid UserID { get; set; }
     
     [BsonRepresentation(BsonType.String)]
     public DateTime OrderDate { get; set; }
@@ -31,7 +31,7 @@ public class OrderItem
     public Guid _id { get; set; }
     
     [BsonRepresentation(BsonType.String)]
-    public Guid ProductId { get; set; }
+    public Guid ProductID { get; set; }
 
     [BsonRepresentation(BsonType.Double)]
     public decimal UnitPrice { get; set; }

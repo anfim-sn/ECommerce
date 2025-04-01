@@ -59,7 +59,7 @@ public class OrderService(
             throw new ArgumentException(errors);
         }
         
-        //Check UserId in Users microservice here
+        //Check UserID in Users microservice here
         
         var orderEntity = mapper.Map<Order>(orderAddRequest);
         
@@ -95,7 +95,7 @@ public class OrderService(
             throw new ArgumentException(errors);
         }
 
-        //Check UserId in Users microservice here
+        //Check UserID in Users microservice here
         var orderEntity = mapper.Map<Order>(orderUpdateRequest);
 
         foreach (var orderItem in orderEntity.OrderItems)
@@ -113,7 +113,7 @@ public class OrderService(
     
     public async Task<bool> DeleteOrder(Guid orderId)
     {
-        var filter = Builders<Order>.Filter.Eq(x => x.OrderId, orderId);
+        var filter = Builders<Order>.Filter.Eq(x => x.OrderID, orderId);
         
         var order = await ordersRepository.GetOrderByCondition(filter);
         

@@ -32,7 +32,13 @@ public class OrderRepository(IMongoDatabase mongoDatabase) : IOrderRepository
     
     public async Task<Order?> AddOrder(Order order)
     {
-        order.OrderId = Guid.NewGuid();
+        order.OrderID = Guid.NewGuid();
+        order._id = order.OrderID;
+
+        foreach (var item in order.OrderItems)
+        {
+            item._id = Guid.NewGuid();
+        }
         
         await _orders.InsertOneAsync(order);
         
@@ -41,21 +47,23 @@ public class OrderRepository(IMongoDatabase mongoDatabase) : IOrderRepository
     
     public async Task<Order?> UpdateOrder(Order order)
     {
-        var filter = Builders<Order>.Filter.Eq(o => o.OrderId, order.OrderId);
+        var filter = Builders<Order>.Filter.Eq(o => o.OrderID, order.OrderID);
 
-        var existingOrder = (await _orders.FindAsync(filter)).FirstOrDefaultAsync();
+        var existingOrder = (await _orders.FindAsync(filter)).FirstOrDefault();
 
         if (existingOrder is null)
             return null;
         
-        await _orders.ReplaceOneAsync(o => o.OrderId == order.OrderId, order);
+        order._id = existingOrder._id;
+        
+        await _orders.ReplaceOneAsync(o => o.OrderID == order.OrderID, order);
 
         return order;
     }
     
     public async Task<bool> DeleteOrder(Guid orderId)
     {
-        var filter = Builders<Order>.Filter.Eq(o => o.OrderId, orderId);
+        var filter = Builders<Order>.Filter.Eq(o => o.OrderID, orderId);
 
         var existingOrder = (await _orders.FindAsync(filter)).FirstOrDefaultAsync();
         

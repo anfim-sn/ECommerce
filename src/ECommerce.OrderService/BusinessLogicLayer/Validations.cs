@@ -7,7 +7,7 @@ public class OrderAddRequestValidator : AbstractValidator<OrderAddRequest>
 {
     public OrderAddRequestValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId is required");
+        RuleFor(x => x.UserId).NotEmpty().WithMessage("UserID is required");
         RuleFor(x => x.OrderDate).NotEmpty().WithMessage("OrderDate is required");
         RuleFor(x => x.OrderItems).NotEmpty().WithMessage("OrderItems is required");
     }
@@ -17,7 +17,7 @@ public class OrderItemAddRequestValidator : AbstractValidator<OrderItemAddReques
 {
     public OrderItemAddRequestValidator()
     {
-        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId is required");
+        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductID is required");
         
         RuleFor(x => x.Quantity)
             .NotEmpty().WithMessage("Quantity is required")
@@ -33,8 +33,8 @@ public class OrderUpdateRequestValidator : AbstractValidator<OrderUpdateRequest>
 {
     public OrderUpdateRequestValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId is required");
-        RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderId is required");
+        RuleFor(x => x.UserId).NotEmpty().WithMessage("UserID is required");
+        RuleFor(x => x.OrderId).NotEmpty().WithMessage("OrderID is required");
         RuleFor(x => x.OrderDate).NotEmpty().WithMessage("OrderDate is required");
         RuleFor(x => x.OrderItems).NotEmpty().WithMessage("OrderItems is required");
         
@@ -45,7 +45,7 @@ public class OrderItemUpdateRequestValidator : AbstractValidator<OrderItemUpdate
 {
     public OrderItemUpdateRequestValidator()
     {
-        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId is required");
+        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductID is required");
 
         RuleFor(x => x.Quantity)
             .NotEmpty().WithMessage("Quantity is required")

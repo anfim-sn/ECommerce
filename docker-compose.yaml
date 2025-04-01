@@ -20,6 +20,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./src/ordersdb/init.js:/docker-entrypoint-initdb.d/init.js:ro
   
   product-service:
     image: anfim/ecommerce-products:v1.0
@@ -48,6 +55,7 @@ services:
         condition: service_healthy
     networks:
       - postgres
+
 
 networks:
   postgres:
