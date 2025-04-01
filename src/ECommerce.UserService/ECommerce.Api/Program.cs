@@ -69,6 +69,6 @@ async Task ApplyMigrations(IServiceProvider services)
     var context = scope.ServiceProvider.GetRequiredService<DapperDbContext>();
 
     context.DbConnection.Open();
-    var a = await context.DbConnection.ExecuteAsync("CREATE TABLE IF NOT EXISTS \"Users\"\n    (\n        \"UserId\"     UUID PRIMARY KEY NOT NULL,\n        \"Email\"      VARCHAR(255) UNIQUE NOT NULL,\n        \"Password\"   TEXT                NOT NULL,\n        \"PersonName\" VARCHAR(255),\n        \"Gender\"     VARCHAR(50)\n    );");
+    var a = await context.DbConnection.ExecuteAsync("CREATE TABLE IF NOT EXISTS \"users\"\n    (\n        \"UserId\"     UUID PRIMARY KEY NOT NULL,\n        \"Email\"      VARCHAR(255) UNIQUE NOT NULL,\n        \"Password\"   TEXT                NOT NULL,\n        \"PersonName\" VARCHAR(255),\n        \"Gender\"     VARCHAR(50)\n    );");
     context.DbConnection.Close();
 }

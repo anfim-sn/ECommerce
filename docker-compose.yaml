@@ -1,5 +1,5 @@
 version: '3.8'
-name: ecommerse
+name: ecommerce
 services:
   postgres:
     image: postgres:15.6
@@ -9,14 +9,14 @@ services:
       - ./local/postgresql:/var/lib/postgresql/data
       - ./local/postgresql/init:/docker-entrypoint-initdb.d
     environment:
-      PGDATA: /var/lib/postgresql/data/ecommerse/
-      POSTGRES_DB: ecommerse
+      PGDATA: /var/lib/postgresql/data/ecommerce/
+      POSTGRES_DB: ecommerce
       POSTGRES_USER: db
       POSTGRES_PASSWORD: 1234
     networks:
       - postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U db -d ecommerse" ]
+      test: [ "CMD-SHELL", "pg_isready -U db -d ecommerce" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -43,11 +43,13 @@ services:
       - postgres
   
   user-service:
-    image: anfim/ecommerce-users:v1.0
+    image: anfim/ecommerce-users:v1.1
     ports:
       - "9090:9090"
     environment:
       POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ecommerce
       POSTGRES_USERNAME: db
       POSTGRES_PASSWORD: 1234
     depends_on:
