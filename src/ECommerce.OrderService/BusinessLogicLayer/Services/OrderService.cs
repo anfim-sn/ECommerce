@@ -1,5 +1,6 @@
 using AutoMapper;
 using BusinessLogicLayer.DTO;
+using BusinessLogicLayer.HttpClients;
 using BusinessLogicLayer.ServiceContracts;
 using DataAccessLayer.Entities;
 using DataAccessLayer.RepositoryContracts;
@@ -9,7 +10,8 @@ using MongoDB.Driver;
 namespace BusinessLogicLayer.Services;
 
 public class OrderService(
-    IOrderRepository ordersRepository, 
+    IOrderRepository ordersRepository,
+    UsersMicroserviceClient usersMicroserviceClient,
     IMapper mapper, 
     IValidator<OrderAddRequest> orderAddRequestValidator,
     IValidator<OrderItemAddRequest> orderItemAddRequestValidator,
@@ -60,6 +62,9 @@ public class OrderService(
         }
         
         //Check UserID in Users microservice here
+        var user = await usersMicroserviceClient.GetUserByUserId(orderAddRequest.UserId);
+        if (user == null)
+            throw new ArgumentException("User not found");
         
         var orderEntity = mapper.Map<Order>(orderAddRequest);
         
@@ -96,6 +101,10 @@ public class OrderService(
         }
 
         //Check UserID in Users microservice here
+        var user = await usersMicroserviceClient.GetUserByUserId(orderUpdateRequest.UserId);
+        if (user == null)
+            throw new ArgumentException("User not found");
+        
         var orderEntity = mapper.Map<Order>(orderUpdateRequest);
 
         foreach (var orderItem in orderEntity.OrderItems)

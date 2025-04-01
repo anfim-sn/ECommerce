@@ -1,4 +1,5 @@
 using BusinessLogicLayer;
+using BusinessLogicLayer.HttpClients;
 using DataAccessLayer;
 using ECommerce.Api.Middleware;
 using FluentValidation.AspNetCore;
@@ -26,6 +27,12 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
+});
+
+builder.Services.AddHttpClient<UsersMicroserviceClient>(client => {
+    client.BaseAddress = new Uri(
+        $"http://{builder.Configuration["UsersMicroserviceName"]}:{builder.Configuration["UsersMicroservicePort"]}");
+
 });
 
 var app = builder.Build();

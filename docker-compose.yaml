@@ -58,6 +58,16 @@ services:
     networks:
       - postgres
 
+  order-service:
+    image: anfim/ecommerce-orders:v1.0
+    ports:
+      - "7070:7070"
+    environment:
+      MONGODB_HOST: localhost
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: OrdersDatabase
+      UsersMicroserviceName: localhost
+      UsersMicroservicePort: 9090
 
 networks:
   postgres:
