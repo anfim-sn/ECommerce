@@ -13,13 +13,13 @@ services:
       POSTGRES_DB: ecommerce
       POSTGRES_USER: db
       POSTGRES_PASSWORD: 1234
-    networks:
-      - postgres
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U db -d ecommerce" ]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - ecommerce
       
   mongo:
     image: mongo:latest
@@ -27,6 +27,8 @@ services:
       - "27017:27017"
     volumes:
       - ./src/ordersdb/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - ecommerce
   
   product-service:
     image: anfim/ecommerce-products:v1.0
@@ -40,7 +42,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - postgres
+      - ecommerce
   
   user-service:
     image: anfim/ecommerce-users:v1.1
@@ -56,19 +58,21 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - postgres
+      - ecommerce
 
   order-service:
     image: anfim/ecommerce-orders:v1.0
     ports:
       - "7070:7070"
     environment:
-      MONGODB_HOST: localhost
+      MONGODB_HOST: mongo
       MONGODB_PORT: 27017
       MONGODB_DATABASE: OrdersDatabase
-      UsersMicroserviceName: localhost
+      UsersMicroserviceName: user-service
       UsersMicroservicePort: 9090
+    networks:
+        - ecommerce
 
 networks:
-  postgres:
+  ecommerce:
     driver: bridge
