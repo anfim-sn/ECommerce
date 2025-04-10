@@ -21,6 +21,8 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DATABASE=ecommerce
 ENV POSTGRES_USERNAME=db
 ENV POSTGRES_PASSWORD=1234
 ENTRYPOINT ["dotnet", "ECommerce.Api.dll"]

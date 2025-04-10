@@ -27,7 +27,7 @@ public class ProductsController(IProductsService productsService) : ControllerBa
         return Ok(product);
     }
     
-    [HttpGet("search/{searchString}")] //GET api/products/search/{productId}
+    [HttpGet("search/{searchString}")] //GET api/products/search/{searchString}
     public async Task<IActionResult> SearchProduct(string searchString)
     {
         var products = await productsService.SearchAsync(searchString);

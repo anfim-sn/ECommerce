@@ -21,6 +21,8 @@ public static class DependencyInjection
                 .GetConnectionString("PostgreSQLConnection")!;
             var connectionString = connectionStringTemplate
                 .Replace("$POSTGRES_HOST", Environment.GetEnvironmentVariable("POSTGRES_HOST"))
+                .Replace("$POSTGRES_PORT", Environment.GetEnvironmentVariable("POSTGRES_PORT"))
+                .Replace("$POSTGRES_DATABASE", Environment.GetEnvironmentVariable("POSTGRES_DATABASE"))
                 .Replace("$POSTGRES_USERNAME", Environment.GetEnvironmentVariable("POSTGRES_USERNAME"))
                 .Replace("$POSTGRES_PASSWORD", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"));
             options.UseNpgsql(connectionString, o => o.MigrationsAssembly("ECommerce.Infrastructure"));
