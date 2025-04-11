@@ -13,7 +13,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5249",
+      "applicationUrl": "http://localhost:7070",
       "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -21,7 +21,9 @@
         "MONGODB_PORT": "27017",
         "MONGODB_DATABASE": "OrdersDatabase",
         "UsersMicroserviceName": "localhost",
-        "UsersMicroservicePort": "9090"
+        "UsersMicroservicePort": "5213",
+        "ProductsMicroserviceName": "localhost",
+        "ProductsMicroservicePort": "5214"
       }
     },
     "https": {
@@ -36,7 +38,9 @@
         "MONGODB_PORT": "27017",
         "MONGODB_DATABASE": "OrdersDatabase",
         "UsersMicroserviceName": "localhost",
-        "UsersMicroservicePort": "9090"
+        "UsersMicroservicePort": "5213",
+        "ProductsMicroserviceName": "localhost",
+        "ProductsMicroservicePort": "5214"
       }
     },
     "IIS Express": {
@@ -48,7 +52,9 @@
         "MONGODB_PORT": "27017",
         "MONGODB_DATABASE": "OrdersDatabase",
         "UsersMicroserviceName": "localhost",
-        "UsersMicroservicePort": "9090"
+        "UsersMicroservicePort": "5213",
+        "ProductsMicroserviceName": "localhost",
+        "ProductsMicroservicePort": "5214"
       }
     }
   }

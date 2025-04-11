@@ -32,10 +32,15 @@ services:
   
   product-service:
     image: anfim/ecommerce-products:v1.0
+#    build:
+#        context: ./src/ECommerce.ProductService
+#        dockerfile: ECommerce.Api/Dockerfile
     ports:
-      - "8080:8080"
+      - "8000:8080"
     environment:
       POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ecommerce
       POSTGRES_USERNAME: db
       POSTGRES_PASSWORD: 1234
     depends_on:
@@ -46,8 +51,11 @@ services:
   
   user-service:
     image: anfim/ecommerce-users:v1.1
+#    build:
+#        context: ./src/ECommerce.UserService
+#        dockerfile: ECommerce.Api/Dockerfile
     ports:
-      - "9090:9090"
+      - "9000:9090"
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -61,15 +69,22 @@ services:
       - ecommerce
 
   order-service:
-    image: anfim/ecommerce-orders:v1.0
+    image: order-service
+    build:
+        context: ./src/ECommerce.OrderService
+        dockerfile: ECommerce.Api/Dockerfile
     ports:
-      - "7070:7070"
+      - "4000:7070"
     environment:
       MONGODB_HOST: mongo
       MONGODB_PORT: 27017
       MONGODB_DATABASE: OrdersDatabase
       UsersMicroserviceName: user-service
       UsersMicroservicePort: 9090
+      ProductsMicroserviceName: product-service
+      ProductsMicroservicePort: 8080
+    depends_on:
+      - mongo
     networks:
         - ecommerce
 

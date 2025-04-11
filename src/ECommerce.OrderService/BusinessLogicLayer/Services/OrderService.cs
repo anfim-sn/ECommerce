@@ -12,6 +12,7 @@ namespace BusinessLogicLayer.Services;
 public class OrderService(
     IOrderRepository ordersRepository,
     UsersMicroserviceClient usersMicroserviceClient,
+    ProductsMicroserviceClient productMicroserviceClient,
     IMapper mapper, 
     IValidator<OrderAddRequest> orderAddRequestValidator,
     IValidator<OrderItemAddRequest> orderItemAddRequestValidator,
@@ -61,6 +62,14 @@ public class OrderService(
             throw new ArgumentException(errors);
         }
         
+        //Check ProductID in Products microservice here
+        foreach (var orderItem in orderAddRequest.OrderItems)
+        {
+            var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
+            if (product == null)
+                throw new ArgumentException($"Product {orderItem.ProductId} not found");
+        }
+
         //Check UserID in Users microservice here
         var user = await usersMicroserviceClient.GetUserByUserId(orderAddRequest.UserId);
         if (user == null)
@@ -104,6 +113,14 @@ public class OrderService(
         var user = await usersMicroserviceClient.GetUserByUserId(orderUpdateRequest.UserId);
         if (user == null)
             throw new ArgumentException("User not found");
+
+        //Check ProductID in Products microservice here
+        foreach (var orderItem in orderUpdateRequest.OrderItems)
+        {
+            var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
+            if (product == null)
+                throw new ArgumentException($"Product {orderItem.ProductId} not found");
+        }
         
         var orderEntity = mapper.Map<Order>(orderUpdateRequest);
 
