@@ -21,16 +21,44 @@ public class OrderService(
     ) : IOrderService
 {
 
-    public async Task<List<OrderResponse>> GetOrders()
+    public async Task<List<OrderResponse?>> GetOrders()
     {
         var orders = await ordersRepository.GetOrders();
-        return mapper.Map<IEnumerable<OrderResponse>>(orders).ToList();
+        var ordersResponse = mapper.Map<IEnumerable<OrderResponse?>>(orders).ToList();
+
+        foreach (var orderResponse in ordersResponse)
+        {
+            if (orderResponse == null)
+                continue;
+
+            foreach (var orderItem in orderResponse.OrderItems)
+            {
+                var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
+                mapper.Map(product, orderItem);
+            }
+        }
+        
+        return ordersResponse;
     }
     
     public async Task<List<OrderResponse?>> GetOrdersByCondition(FilterDefinition<Order> filter)
     {
         var orders = await ordersRepository.GetOrdersByCondition(filter);
-        return mapper.Map<IEnumerable<OrderResponse?>>(orders).ToList();
+        var ordersResponse = mapper.Map<IEnumerable<OrderResponse?>>(orders).ToList();
+
+        foreach (var orderResponse in ordersResponse)
+        {
+            if (orderResponse == null)
+                continue;
+            
+            foreach (var orderItem in orderResponse.OrderItems)
+            {
+                var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
+                mapper.Map(product, orderItem);
+            }
+        }
+
+        return ordersResponse;
     }
     
     public async Task<OrderResponse?> GetOrderByCondition(FilterDefinition<Order> filter)
@@ -40,7 +68,15 @@ public class OrderService(
         if (order == null)
             return null;
         
-        return mapper.Map<OrderResponse>(order);
+        var orderResponse = mapper.Map<OrderResponse>(order);
+
+        foreach (var orderItem in orderResponse.OrderItems)
+        {
+            var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
+            mapper.Map(product, orderItem);
+        }
+
+        return orderResponse;
     }
     
     public async Task<OrderResponse?> AddOrder(OrderAddRequest orderAddRequest)
@@ -63,11 +99,14 @@ public class OrderService(
         }
         
         //Check ProductID in Products microservice here
+        var products = new List<ProductDTO>();
         foreach (var orderItem in orderAddRequest.OrderItems)
         {
             var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
             if (product == null)
                 throw new ArgumentException($"Product {orderItem.ProductId} not found");
+
+            products.Add(product);
         }
 
         //Check UserID in Users microservice here
@@ -82,12 +121,20 @@ public class OrderService(
 
         orderEntity.TotalBill = orderEntity.OrderItems.Sum(x => x.TotalPrice);
         
-        var result = await ordersRepository.AddOrder(orderEntity);
+        var order = await ordersRepository.AddOrder(orderEntity);
         
-        if (result == null)
+        if (order == null)
             return null;
-        
-        return mapper.Map<OrderResponse>(result);
+
+        var orderResponse = mapper.Map<OrderResponse>(order);
+
+        foreach (var orderItem in orderResponse.OrderItems)
+        {
+            var product = products.FirstOrDefault(p => p.ProductId == orderItem.ProductId);
+            mapper.Map(product, orderItem);
+        }
+
+        return orderResponse;
     }
     
     public async Task<OrderResponse?> UpdateOrder(OrderUpdateRequest orderUpdateRequest)
@@ -115,11 +162,14 @@ public class OrderService(
             throw new ArgumentException("User not found");
 
         //Check ProductID in Products microservice here
+        var products = new List<ProductDTO>();
         foreach (var orderItem in orderUpdateRequest.OrderItems)
         {
             var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
             if (product == null)
                 throw new ArgumentException($"Product {orderItem.ProductId} not found");
+
+            products.Add(product);
         }
         
         var orderEntity = mapper.Map<Order>(orderUpdateRequest);
@@ -129,12 +179,20 @@ public class OrderService(
 
         orderEntity.TotalBill = orderEntity.OrderItems.Sum(x => x.TotalPrice);
         
-        var result = await ordersRepository.UpdateOrder(orderEntity);
+        var order = await ordersRepository.UpdateOrder(orderEntity);
 
-        if (result == null)
+        if (order == null)
             return null;
+
+        var orderResponse = mapper.Map<OrderResponse>(order);
         
-        return mapper.Map<OrderResponse>(result);
+        foreach (var orderItem in orderResponse.OrderItems)
+        {
+            var product = products.FirstOrDefault(p => p.ProductId == orderItem.ProductId);
+            mapper.Map(product, orderItem);
+        }
+
+        return orderResponse;
     }
     
     public async Task<bool> DeleteOrder(Guid orderId)

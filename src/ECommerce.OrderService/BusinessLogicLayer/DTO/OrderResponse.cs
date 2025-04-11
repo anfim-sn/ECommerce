@@ -5,7 +5,7 @@ public record OrderResponse(Guid OrderId, Guid UserId, decimal TotalBill, DateTi
     public OrderResponse():this(default, default, default, default, default) { }
 }
 
-public record OrderItemResponse(Guid ProductId, decimal UnitPrice, int Quantity, decimal TotalPrice)
+public record OrderItemResponse(Guid ProductId, string ProductName, string Category, decimal UnitPrice, int Quantity, decimal TotalPrice)
 {
-    public OrderItemResponse() : this(default, default, default, default){}
+    public OrderItemResponse() : this(default, "", "", default, default, default){}
 }

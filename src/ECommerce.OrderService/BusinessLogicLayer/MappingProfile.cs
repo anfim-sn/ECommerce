@@ -17,6 +17,6 @@ public class MappingProfile : Profile
         CreateMap<Order, OrderResponse>();
         CreateMap<OrderItem, OrderItemResponse>();
         
-        
+        CreateMap<ProductDTO, OrderItemResponse>();
     }
 }

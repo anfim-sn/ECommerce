@@ -6,7 +6,7 @@ namespace BusinessLogicLayer.ServiceContracts;
 
 public interface IOrderService
 {
-    public Task<List<OrderResponse>> GetOrders();
+    public Task<List<OrderResponse?>> GetOrders();
     public Task<List<OrderResponse?>> GetOrdersByCondition(FilterDefinition<Order> filter);
     public Task<OrderResponse?> GetOrderByCondition(FilterDefinition<Order> filter);
     public Task<OrderResponse?> AddOrder(OrderAddRequest order);
