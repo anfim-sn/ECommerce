@@ -25,12 +25,15 @@ public class OrderService(
     {
         var orders = await ordersRepository.GetOrders();
         var ordersResponse = mapper.Map<IEnumerable<OrderResponse?>>(orders).ToList();
-
+        
         foreach (var orderResponse in ordersResponse)
         {
             if (orderResponse == null)
                 continue;
 
+            var user = await usersMicroserviceClient.GetUserByUserId(orderResponse.UserId);
+            mapper.Map(user, orderResponse);
+            
             foreach (var orderItem in orderResponse.OrderItems)
             {
                 var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
@@ -50,6 +53,9 @@ public class OrderService(
         {
             if (orderResponse == null)
                 continue;
+
+            var user = await usersMicroserviceClient.GetUserByUserId(orderResponse.UserId);
+            mapper.Map(user, orderResponse);
             
             foreach (var orderItem in orderResponse.OrderItems)
             {
@@ -70,6 +76,9 @@ public class OrderService(
         
         var orderResponse = mapper.Map<OrderResponse>(order);
 
+        var user = await usersMicroserviceClient.GetUserByUserId(orderResponse.UserId);
+        mapper.Map(user, orderResponse);
+        
         foreach (var orderItem in orderResponse.OrderItems)
         {
             var product = await productMicroserviceClient.GetProductByProductId(orderItem.ProductId);
@@ -128,6 +137,8 @@ public class OrderService(
 
         var orderResponse = mapper.Map<OrderResponse>(order);
 
+        mapper.Map(user, orderResponse);
+        
         foreach (var orderItem in orderResponse.OrderItems)
         {
             var product = products.FirstOrDefault(p => p.ProductId == orderItem.ProductId);
@@ -185,6 +196,8 @@ public class OrderService(
             return null;
 
         var orderResponse = mapper.Map<OrderResponse>(order);
+
+        mapper.Map(user, orderResponse);
         
         foreach (var orderItem in orderResponse.OrderItems)
         {
