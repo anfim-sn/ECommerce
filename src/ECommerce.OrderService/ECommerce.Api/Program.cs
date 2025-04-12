@@ -1,5 +1,6 @@
 using BusinessLogicLayer;
 using BusinessLogicLayer.HttpClients;
+using BusinessLogicLayer.Policies;
 using DataAccessLayer;
 using ECommerce.Api.Middleware;
 using FluentValidation.AspNetCore;
@@ -29,17 +30,23 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddHttpClient<UsersMicroserviceClient>(client => {
+builder.Services.AddTransient<IBasePolicies, BasePolicies>();
+builder.Services.AddTransient<IUsersMicroservicePolicy, UsersMicroservicePolicy>();
+builder.Services.AddTransient<IProductsMicroservicePolicy, ProductsMicroservicePolicy>();
+
+builder.Services
+    .AddHttpClient<UsersMicroserviceClient>(client => {
+        client.BaseAddress = new Uri(
+            $"http://{builder.Configuration["UsersMicroserviceName"]}:{builder.Configuration["UsersMicroservicePort"]}");
+    })
+    .AddPolicyHandler(builder.Services.BuildServiceProvider().GetRequiredService<IUsersMicroservicePolicy>().GetCombinedPolicy());
+
+builder.Services
+    .AddHttpClient<ProductsMicroserviceClient>(client => {
     client.BaseAddress = new Uri(
-        $"http://{builder.Configuration["UsersMicroserviceName"]}:{builder.Configuration["UsersMicroservicePort"]}");
-
-});
-
-builder.Services.AddHttpClient<ProductsMicroserviceClient>(client => {
-    client.BaseAddress = new Uri(
-        $"http://{builder.Configuration["ProductsMicroserviceName"]}:{builder.Configuration["ProductsMicroservicePort"]}");
-
-});
+        $"http://{builder.Configuration["ProductsMicroserviceName"]}:{builder.Configuration["ProductsMicroservicePort"]}"); 
+    })
+    .AddPolicyHandler(builder.Services.BuildServiceProvider().GetRequiredService<IProductsMicroservicePolicy>().GetCombinedPolicy());
 
 var app = builder.Build();
 
