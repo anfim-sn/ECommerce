@@ -16,6 +16,8 @@ public static class DependencyInjection
         services.AddAutoMapper(typeof(MappingProfile).Assembly);
         
         services.AddScoped<IOrderService, OrderService>();
+
+        services.AddStackExchangeRedisCache(o => o.Configuration = $"{configuration["REDIS_HOST"]}:{configuration["REDIS_PORT"]}");
         
         return services;
     }

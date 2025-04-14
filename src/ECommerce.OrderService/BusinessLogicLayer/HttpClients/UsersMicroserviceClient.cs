@@ -2,18 +2,26 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using BusinessLogicLayer.DTO;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Polly.Timeout;
 
 namespace BusinessLogicLayer.HttpClients;
 
-public class UsersMicroserviceClient(HttpClient httpClient, ILogger<UsersMicroserviceClient> logger)
+public class UsersMicroserviceClient(HttpClient httpClient, IDistributedCache cache, ILogger<UsersMicroserviceClient> logger)
 {
     public async Task<UserDTO?> GetUserByUserId(Guid userId)
     {
         try
         {
+            //Get cached user
+            var userKey = $"user:{userId}";
+            var cachedUser = await cache.GetStringAsync(userKey);
+
+            if (cachedUser != null)
+                return JsonSerializer.Deserialize<UserDTO>(cachedUser);
+            
             var response = await httpClient.GetAsync($"/api/users/{userId}");
 
             if (!response.IsSuccessStatusCode)
@@ -24,6 +32,8 @@ public class UsersMicroserviceClient(HttpClient httpClient, ILogger<UsersMicrose
                         return null;
                     case HttpStatusCode.BadRequest:
                         throw new HttpRequestException("Invalid request", null, HttpStatusCode.BadRequest);
+                    case HttpStatusCode.ServiceUnavailable:
+                        return await response.Content.ReadFromJsonAsync<UserDTO>();
                     default:
                         return new UserDTO
                         {
@@ -34,8 +44,20 @@ public class UsersMicroserviceClient(HttpClient httpClient, ILogger<UsersMicrose
                         };
                 }
             }
-            
-            return await response.Content.ReadFromJsonAsync<UserDTO>();
+
+            var user = await response.Content.ReadFromJsonAsync<UserDTO>();
+
+            if (user == null)
+                throw new HttpRequestException("User not found", null, HttpStatusCode.NotFound);
+
+            var userToCache = JsonSerializer.Serialize(user);
+            await cache.SetStringAsync(userKey, userToCache, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(3)
+            });
+
+            return user;
         }
         catch (BrokenCircuitException ex)
         {

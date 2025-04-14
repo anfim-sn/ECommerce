@@ -16,7 +16,7 @@ public class BasePolicies(ILogger<BasePolicies> logger) : IBasePolicies
             .HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
             .FallbackAsync(async (context) => {
                 logger.LogInformation($"Fallback triggered, returning default product data");
-                return new HttpResponseMessage(HttpStatusCode.OK)
+                return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
                 {
                     Content = new StringContent(JsonSerializer.Serialize(dataToReturn), Encoding.UTF8, "application/json")
                 };
