@@ -70,5 +70,6 @@ async Task ApplyMigrations(IServiceProvider services)
 
     context.DbConnection.Open();
     var a = await context.DbConnection.ExecuteAsync("CREATE TABLE IF NOT EXISTS \"users\"\n    (\n        \"UserId\"     UUID PRIMARY KEY NOT NULL,\n        \"Email\"      VARCHAR(255) UNIQUE NOT NULL,\n        \"Password\"   TEXT                NOT NULL,\n        \"PersonName\" VARCHAR(255),\n        \"Gender\"     VARCHAR(50)\n    );");
+    var b = await context.DbConnection.ExecuteAsync("INSERT INTO users (\"UserId\", \"Email\", \"PersonName\", \"Gender\", \"Password\")\nVALUES ('c32f8b42-60e6-4c02-90a7-9143ab37189f', 'test1@example.com', 'John Doe', 'Male', 'password1'),\n       ('8ff22c7d-18c7-4ef0-a0ac-988ecb2ac7f5', 'test2@example.com', 'Jane Smith', 'Female', 'password2') \nON CONFLICT DO NOTHING;\n");
     context.DbConnection.Close();
 }

@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLogicLayer", "Busin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{D16AB4E5-7DAA-4415-AD4E-3CBE63E41E6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{BCDFEC8B-D407-4B19-A9B8-6EB7F9E2EBCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{D16AB4E5-7DAA-4415-AD4E-3CBE63E41E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D16AB4E5-7DAA-4415-AD4E-3CBE63E41E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D16AB4E5-7DAA-4415-AD4E-3CBE63E41E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCDFEC8B-D407-4B19-A9B8-6EB7F9E2EBCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCDFEC8B-D407-4B19-A9B8-6EB7F9E2EBCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCDFEC8B-D407-4B19-A9B8-6EB7F9E2EBCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCDFEC8B-D407-4B19-A9B8-6EB7F9E2EBCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

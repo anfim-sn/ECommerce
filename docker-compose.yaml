@@ -39,6 +39,16 @@ services:
     networks:
       - ecommerce
   
+  apigateway:
+    image: apigateway
+    build:
+        context: ./src/ECommerce.OrderService
+        dockerfile: ApiGateway/Dockerfile
+    ports:
+        - "5001:8080"
+    networks:
+        - ecommerce
+  
   product-service:
     image: anfim/ecommerce-products:v1.0
 #    build:
@@ -90,9 +100,9 @@ services:
       MONGODB_DATABASE: OrdersDatabase
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      UsersMicroserviceName: user-service
-      UsersMicroservicePort: 9090
-      ProductsMicroserviceName: product-service
+      UsersMicroserviceName: apigateway
+      UsersMicroservicePort: 8080
+      ProductsMicroserviceName: apigateway
       ProductsMicroservicePort: 8080
     depends_on:
       - mongo

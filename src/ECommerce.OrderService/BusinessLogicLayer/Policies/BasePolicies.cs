@@ -46,7 +46,7 @@ public class BasePolicies(ILogger<BasePolicies> logger) : IBasePolicies
 
     public IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(int handledEventsAllowedBeforeBreaking, TimeSpan durationOfBreak)
     {
-        return Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
+        return Policy.HandleResult<HttpResponseMessage>(r => r.StatusCode != HttpStatusCode.NotFound || !r.IsSuccessStatusCode)
             .CircuitBreakerAsync(
                 handledEventsAllowedBeforeBreaking,
                 durationOfBreak,

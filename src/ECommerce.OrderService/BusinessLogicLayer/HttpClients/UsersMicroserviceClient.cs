@@ -22,7 +22,7 @@ public class UsersMicroserviceClient(HttpClient httpClient, IDistributedCache ca
             if (cachedUser != null)
                 return JsonSerializer.Deserialize<UserDTO>(cachedUser);
             
-            var response = await httpClient.GetAsync($"/api/users/{userId}");
+            var response = await httpClient.GetAsync($"/gateway/users/{userId}");
 
             if (!response.IsSuccessStatusCode)
             {
