@@ -127,6 +127,7 @@ services:
       RabbitMQ_Products_Exchange: products.exchange
     depends_on:
       - mongo
+      - rabbit
     networks:
         - ecommerce
 

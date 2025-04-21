@@ -1,4 +1,5 @@
 using System.Reflection;
+using BusinessLogicLayer.RabbitMQ;
 using BusinessLogicLayer.ServiceContracts;
 using BusinessLogicLayer.Services;
 using FluentValidation;
@@ -18,6 +19,9 @@ public static class DependencyInjection
         services.AddScoped<IOrderService, OrderService>();
 
         services.AddStackExchangeRedisCache(o => o.Configuration = $"{configuration["REDIS_HOST"]}:{configuration["REDIS_PORT"]}");
+
+        services.AddTransient<IRabbitMqProductNameUpdateConsumer, RabbitMqProductNameUpdateConsumer>();
+        services.AddHostedService<RabbitMQProductNameUpdateHostedService>();
         
         return services;
     }
