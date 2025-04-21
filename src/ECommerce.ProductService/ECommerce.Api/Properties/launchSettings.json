@@ -20,7 +20,12 @@
         "POSTGRES_PORT": "5432",
         "POSTGRES_DATABASE": "ecommerce",
         "POSTGRES_USERNAME": "db",
-        "POSTGRES_PASSWORD": "1234"
+        "POSTGRES_PASSWORD": "1234",
+        "RabbitMQ_HostName": "localhost",
+        "RabbitMQ_Port": "5672",
+        "RabbitMQ_UserName": "user",
+        "RabbitMQ_Password": "1234",
+        "RabbitMQ_Products_Exchange": "products.exchange"
       }
     },
     "https": {
@@ -34,7 +39,12 @@
         "POSTGRES_PORT": "5432",
         "POSTGRES_DATABASE": "ecommerce",
         "POSTGRES_USERNAME": "db",
-        "POSTGRES_PASSWORD": "1234"
+        "POSTGRES_PASSWORD": "1234",
+        "RabbitMQ_HostName": "localhost",
+        "RabbitMQ_Port": "5672",
+        "RabbitMQ_UserName": "user",
+        "RabbitMQ_Password": "1234",
+        "RabbitMQ_Products_Exchange": "products.exchange"
       }
     },
     "IIS Express": {

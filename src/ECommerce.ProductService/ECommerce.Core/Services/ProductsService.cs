@@ -2,12 +2,13 @@ using System.Security.Cryptography;
 using AutoMapper;
 using ECommerce.Core.DTO;
 using ECommerce.Core.Entities;
+using ECommerce.Core.RabbitMQ;
 using ECommerce.Core.RepositoryContracts;
 using ECommerce.Core.ServiceContracts;
 
 namespace ECommerce.Core.Services;
 
-internal class ProductsService(IProductRepository productRepository, IMapper mapper) : IProductsService
+internal class ProductsService(IProductRepository productRepository, IRabbitMQPublisher rabbitMQPublisher, IMapper mapper) : IProductsService
 {
     public async Task<List<Product>> GetListAsync()
     {
@@ -33,15 +34,33 @@ internal class ProductsService(IProductRepository productRepository, IMapper map
         return mapper.Map<ProductResponse>(product) with { IsSuccess = isSuccess };
     }
     
-    public async Task<ProductResponse> UpdateAsync(ProductRequest product)
+    public async Task<ProductResponse> UpdateAsync(ProductRequest productRequest)
     {
+        var existingProduct = productRepository.GetByCondition(temp => temp.ProductId == productRequest.ProductId, false);
+
+        if (existingProduct == null)
+            throw new ArgumentException("Invalid Product ID");
+        
         var isSuccess = false;
-        var affectedRow = await productRepository.UpdateAsync(mapper.Map<Product>(product));
+
+        var product = mapper.Map<Product>(productRequest);
+        
+        var isProductNameChanged = productRequest.ProductName != existingProduct.ProductName;
+        
+        var affectedRow = await productRepository.UpdateAsync(product);
 
         if (affectedRow > 0)
             isSuccess = true;
+
+        if (isProductNameChanged)
+        {
+            var routingKey = "product.update.name";
+            var message = new ProductNameUpdateMessage(product.ProductId, product.ProductName);
+            
+            await rabbitMQPublisher.PublishAsync<ProductNameUpdateMessage>(routingKey, message);
+        }
         
-        return mapper.Map<ProductResponse>(product) with{ IsSuccess = isSuccess };
+        return mapper.Map<ProductResponse>(productRequest) with{ IsSuccess = isSuccess };
     }
     public async Task<bool> DeleteByIdAsync(Guid id)
     {

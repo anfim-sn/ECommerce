@@ -15,6 +15,13 @@ internal class ProductsRepository(ProductDbContext DbContext) : IProductReposito
     {
         return await DbContext.Products.FirstOrDefaultAsync(x => x.ProductId == id);
     }
+    public Product? GetByCondition(Func<Product, bool> predicate, bool tracked)
+    {
+        if (tracked)
+            return DbContext.Products.FirstOrDefault(predicate);
+        
+        return DbContext.Products.AsNoTracking().FirstOrDefault(predicate);
+    }
     public async Task<List<Product>> SearchAsync(string searchString)
     {
         return await DbContext.Products.Where(x => x.ProductName.Contains(searchString)).ToListAsync();

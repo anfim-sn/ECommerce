@@ -10,6 +10,6 @@ public interface IProductsService
     Task<Product?> GetByIdAsync(Guid id);
     Task<List<Product>> SearchAsync(string searchString);
     Task<ProductResponse> AddAsync(ProductRequest product);
-    Task<ProductResponse> UpdateAsync(ProductRequest product);
+    Task<ProductResponse> UpdateAsync(ProductRequest productRequest);
     Task<bool> DeleteByIdAsync(Guid id);
 }

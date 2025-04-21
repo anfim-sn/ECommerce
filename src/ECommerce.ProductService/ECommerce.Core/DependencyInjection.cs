@@ -1,3 +1,4 @@
+using ECommerce.Core.RabbitMQ;
 using ECommerce.Core.ServiceContracts;
 using ECommerce.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,8 @@ public static class DependencyInjection
     /// </summary>
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
-        services.AddTransient<IProductsService, ProductsService>();
+        services.AddScoped<IProductsService, ProductsService>();
+        services.AddTransient<IRabbitMQPublisher, RabbitMQPublisher>();
         
         return services;
     }

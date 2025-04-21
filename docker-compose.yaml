@@ -39,6 +39,17 @@ services:
     networks:
       - ecommerce
   
+  rabbit:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+        RABBITMQ_DEFAULT_USER: user
+        RABBITMQ_DEFAULT_PASS: 1234
+    networks:
+        - ecommerce
+  
   apigateway:
     image: apigateway
     build:
@@ -62,6 +73,11 @@ services:
       POSTGRES_DATABASE: ecommerce
       POSTGRES_USERNAME: db
       POSTGRES_PASSWORD: 1234
+      RabbitMQ_HostName: rabbit
+      RabbitMQ_Port: 5672
+      RabbitMQ_UserName: user
+      RabbitMQ_Password: 1234
+      RabbitMQ_Products_Exchange: products.exchange
     depends_on:
       postgres:
         condition: service_healthy
@@ -104,6 +120,11 @@ services:
       UsersMicroservicePort: 8080
       ProductsMicroserviceName: apigateway
       ProductsMicroservicePort: 8080
+      RabbitMQ_HostName: rabbit
+      RabbitMQ_Port: 5672
+      RabbitMQ_UserName: user
+      RabbitMQ_Password: 1234
+      RabbitMQ_Products_Exchange: products.exchange
     depends_on:
       - mongo
     networks:
