@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using AutoMapper;
 using ECommerce.Core.DTO;
 using ECommerce.Core.Entities;
@@ -64,6 +63,16 @@ internal class ProductsService(IProductRepository productRepository, IRabbitMQPu
     }
     public async Task<bool> DeleteByIdAsync(Guid id)
     {
-        return await productRepository.DeleteByIdAsync(id);
+        var isSuccess =  await productRepository.DeleteByIdAsync(id);
+
+        if (isSuccess)
+        {
+            var routingKey = "product.delete";
+            var message = new ProductDeleteMessage(id);
+
+            await rabbitMQPublisher.PublishAsync<ProductDeleteMessage>(routingKey, message);
+        }
+        
+        return isSuccess;
     }
 }

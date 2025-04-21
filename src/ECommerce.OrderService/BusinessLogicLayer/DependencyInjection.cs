@@ -21,7 +21,10 @@ public static class DependencyInjection
         services.AddStackExchangeRedisCache(o => o.Configuration = $"{configuration["REDIS_HOST"]}:{configuration["REDIS_PORT"]}");
 
         services.AddTransient<IRabbitMqProductNameUpdateConsumer, RabbitMqProductNameUpdateConsumer>();
+        services.AddTransient<IRabbitMqProductDeleteConsumer, RabbitMqProductDeleteConsumer>();
+        
         services.AddHostedService<RabbitMQProductNameUpdateHostedService>();
+        services.AddHostedService<RabbitMQProductDeleteHostedService>();
         
         return services;
     }
