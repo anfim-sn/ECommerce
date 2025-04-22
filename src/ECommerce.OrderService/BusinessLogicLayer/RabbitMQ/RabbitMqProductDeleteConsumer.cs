@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -10,13 +11,15 @@ namespace BusinessLogicLayer.RabbitMQ;
 public class RabbitMqProductDeleteConsumer : IRabbitMqProductDeleteConsumer, IDisposable
 {
     private readonly IConfiguration _configuration;
+    private readonly IDistributedCache _cache;
     private readonly ILogger<RabbitMqProductDeleteConsumer> _logger;
     private readonly IChannel _channel;
     private readonly IConnection _connection;
 
-    public RabbitMqProductDeleteConsumer(IConfiguration configuration, ILogger<RabbitMqProductDeleteConsumer> logger)
+    public RabbitMqProductDeleteConsumer(IConfiguration configuration, IDistributedCache cache, ILogger<RabbitMqProductDeleteConsumer> logger)
     {
         _configuration = configuration;
+        _cache = cache;
         _logger = logger;
 
         var hostName = _configuration["RabbitMQ_HostName"];
@@ -37,13 +40,20 @@ public class RabbitMqProductDeleteConsumer : IRabbitMqProductDeleteConsumer, IDi
 
     public async Task ConsumeAsync()
     {
-        var routingKey = "product.delete";
         var queueName = "orders.product.delete.queue";
-        var exchangeName = _configuration["RabbitMQ_Products_Exchange"]!;
+
+        var headers = new Dictionary<string, object>()
+        {
+            { "x-match", "all" },
+            { "event", "product.delete" },
+            { "RowCount", 1 }
+        };
         
-        await _channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Direct, durable: true);
+        var exchangeName = _configuration["RabbitMQ_Products_Exchange"]!;
+        await _channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Headers, durable: true);
+        
         await _channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
-        await _channel.QueueBindAsync(queueName, exchangeName, routingKey);
+        await _channel.QueueBindAsync(queueName, exchangeName, string.Empty, arguments: headers);
         
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
@@ -54,7 +64,11 @@ public class RabbitMqProductDeleteConsumer : IRabbitMqProductDeleteConsumer, IDi
             if (message != null)
             {
                 var productNameUpdateMessage = JsonSerializer.Deserialize<ProductDeleteMessage>(message);
-                _logger.LogInformation($"Product Has Been Deleted: {productNameUpdateMessage?.ProductId}");
+                var productKey = $"product:{productNameUpdateMessage?.ProductId}";
+                
+                await _cache.RemoveAsync(productKey);
+                
+                _logger.LogInformation($"Product Has Been Deleted in cache: {productNameUpdateMessage?.ProductId}");
             }
             
         };

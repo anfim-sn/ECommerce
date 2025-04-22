@@ -2,16 +2,16 @@ using Microsoft.Extensions.Hosting;
 
 namespace BusinessLogicLayer.RabbitMQ;
 
-public class RabbitMQProductNameUpdateHostedService(IRabbitMqProductNameUpdateConsumer rabbitMqProductNameUpdateConsumer) : IHostedService
+public class RabbitMQProductUpdateHostedService(IRabbitMqProductUpdateConsumer rabbitMqProductUpdateConsumer) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        await rabbitMqProductNameUpdateConsumer.ConsumeAsync();
+        await rabbitMqProductUpdateConsumer.ConsumeAsync();
     }
     
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        rabbitMqProductNameUpdateConsumer.Dispose();
+        rabbitMqProductUpdateConsumer.Dispose();
         await Task.CompletedTask;
     }
 }

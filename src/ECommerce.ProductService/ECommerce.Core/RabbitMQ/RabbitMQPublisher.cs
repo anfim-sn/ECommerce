@@ -32,15 +32,22 @@ public class RabbitMQPublisher : IRabbitMQPublisher, IDisposable
         _channel = _connection.CreateChannelAsync().Result;
     }
     
-    public async Task PublishAsync<T>(string routingKey, T message)
+    public async Task PublishAsync<T>(IDictionary<string, object> headers, T message)
     {
         var messageJson = JsonSerializer.Serialize(message);
         var messageBytes = Encoding.UTF8.GetBytes(messageJson);
 
         var exchangeName = _configuration["RabbitMQ_Products_Exchange"]!;
-        await _channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Direct, durable: true);
+        await _channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Headers, durable: true);
 
-        await _channel.BasicPublishAsync(exchangeName, routingKey, messageBytes);
+        var properties = new BasicProperties { Headers = headers };
+
+        var publicationAddress = new PublicationAddress(ExchangeType.Headers, exchangeName, string.Empty);
+        
+        await _channel.BasicPublishAsync<BasicProperties>(
+            addr: publicationAddress,
+            basicProperties: properties, 
+            body: messageBytes);
     }
     
     public void Dispose()

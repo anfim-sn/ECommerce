@@ -23,7 +23,12 @@
         "UsersMicroserviceName": "localhost",
         "UsersMicroservicePort": "5213",
         "ProductsMicroserviceName": "localhost",
-        "ProductsMicroservicePort": "5214"
+        "ProductsMicroservicePort": "5214",
+        "RabbitMQ_HostName": "localhost",
+        "RabbitMQ_Port": "5672",
+        "RabbitMQ_UserName": "user",
+        "RabbitMQ_Password": "1234",
+        "RabbitMQ_Products_Exchange": "products.exchange"
       }
     },
     "https": {
@@ -40,7 +45,12 @@
         "UsersMicroserviceName": "localhost",
         "UsersMicroservicePort": "5213",
         "ProductsMicroserviceName": "localhost",
-        "ProductsMicroservicePort": "5214"
+        "ProductsMicroservicePort": "5214",
+        "RabbitMQ_HostName": "localhost",
+        "RabbitMQ_Port": "5672",
+        "RabbitMQ_UserName": "user",
+        "RabbitMQ_Password": "1234",
+        "RabbitMQ_Products_Exchange": "products.exchange"
       }
     },
     "IIS Express": {
@@ -54,7 +64,12 @@
         "UsersMicroserviceName": "localhost",
         "UsersMicroservicePort": "5213",
         "ProductsMicroserviceName": "localhost",
-        "ProductsMicroservicePort": "5214"
+        "ProductsMicroservicePort": "5214",
+        "RabbitMQ_HostName": "localhost",
+        "RabbitMQ_Port": "5672",
+        "RabbitMQ_UserName": "user",
+        "RabbitMQ_Password": "1234",
+        "RabbitMQ_Products_Exchange": "products.exchange"
       }
     }
   }

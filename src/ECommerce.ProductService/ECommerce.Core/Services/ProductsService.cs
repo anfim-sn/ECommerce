@@ -44,33 +44,37 @@ internal class ProductsService(IProductRepository productRepository, IRabbitMQPu
 
         var product = mapper.Map<Product>(productRequest);
         
-        var isProductNameChanged = productRequest.ProductName != existingProduct.ProductName;
-        
         var affectedRow = await productRepository.UpdateAsync(product);
 
         if (affectedRow > 0)
             isSuccess = true;
-
-        if (isProductNameChanged)
-        {
-            var routingKey = "product.update.name";
-            var message = new ProductNameUpdateMessage(product.ProductId, product.ProductName);
-            
-            await rabbitMQPublisher.PublishAsync<ProductNameUpdateMessage>(routingKey, message);
-        }
         
-        return mapper.Map<ProductResponse>(productRequest) with{ IsSuccess = isSuccess };
+        var headers = new Dictionary<string, object>()
+        {
+            {"x-match", "all"},
+            {"event", "product.update"},
+            {"RowCount", 1},
+        };
+        
+        await rabbitMQPublisher.PublishAsync<Product>(headers, product);
+        
+        return mapper.Map<ProductResponse>(productRequest) with { IsSuccess = isSuccess };
     }
+    
     public async Task<bool> DeleteByIdAsync(Guid id)
     {
         var isSuccess =  await productRepository.DeleteByIdAsync(id);
 
         if (isSuccess)
         {
-            var routingKey = "product.delete";
+            var headers = new Dictionary<string, object>()
+            {
+                {"event", "product.delete"},
+                {"RowCount", 1}
+            };
             var message = new ProductDeleteMessage(id);
 
-            await rabbitMQPublisher.PublishAsync<ProductDeleteMessage>(routingKey, message);
+            await rabbitMQPublisher.PublishAsync<ProductDeleteMessage>(headers, message);
         }
         
         return isSuccess;
