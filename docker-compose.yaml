@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 name: ecommerce
 services:
   postgres:
@@ -14,7 +14,7 @@ services:
       POSTGRES_USER: db
       POSTGRES_PASSWORD: 1234
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U db -d ecommerce" ]
+      test: ["CMD-SHELL", "pg_isready -U db -d ecommerce"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -35,36 +35,36 @@ services:
     ports:
       - "6379:6379"
     volumes:
-        - ./local/redis-cache:/data
+      - ./local/redis-cache:/data
     networks:
       - ecommerce
-  
+
   rabbit:
     image: rabbitmq:3.13-management
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
-        RABBITMQ_DEFAULT_USER: user
-        RABBITMQ_DEFAULT_PASS: 1234
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: 1234
     networks:
-        - ecommerce
-  
+      - ecommerce
+
   apigateway:
     image: apigateway
     build:
-        context: ./src/ECommerce.OrderService
-        dockerfile: ApiGateway/Dockerfile
+      context: ./src/ECommerce.OrderService
+      dockerfile: ApiGateway/Dockerfile
     ports:
-        - "5001:8080"
+      - "5001:8080"
     networks:
-        - ecommerce
-  
+      - ecommerce
+
   product-service:
     image: anfim/ecommerce-products:v1.0
-#    build:
-#        context: ./src/ECommerce.ProductService
-#        dockerfile: ECommerce.Api/Dockerfile
+    #    build:
+    #        context: ./src/ECommerce.ProductService
+    #        dockerfile: ECommerce.Api/Dockerfile
     ports:
       - "8000:8080"
     environment:
@@ -83,12 +83,12 @@ services:
         condition: service_healthy
     networks:
       - ecommerce
-  
+
   user-service:
     image: anfim/ecommerce-users:v1.1
-#    build:
-#        context: ./src/ECommerce.UserService
-#        dockerfile: ECommerce.Api/Dockerfile
+    #    build:
+    #        context: ./src/ECommerce.UserService
+    #        dockerfile: ECommerce.Api/Dockerfile
     ports:
       - "9000:9090"
     environment:
@@ -106,8 +106,8 @@ services:
   order-service:
     image: order-service
     build:
-        context: ./src/ECommerce.OrderService
-        dockerfile: ECommerce.Api/Dockerfile
+      context: ./src/ECommerce.OrderService
+      dockerfile: ECommerce.Api/Dockerfile
     ports:
       - "4000:7070"
     environment:
@@ -129,7 +129,7 @@ services:
       - mongo
       - rabbit
     networks:
-        - ecommerce
+      - ecommerce
 
 networks:
   ecommerce:

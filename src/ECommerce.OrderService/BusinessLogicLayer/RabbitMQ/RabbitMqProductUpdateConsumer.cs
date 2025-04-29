@@ -14,7 +14,7 @@ public class RabbitMqProductUpdateConsumer : IRabbitMqProductUpdateConsumer, IDi
     private readonly IConfiguration _configuration;
     private readonly IDistributedCache _cache;
     private readonly ILogger<RabbitMqProductUpdateConsumer> _logger;
-    private readonly IChannel _channel;
+    private readonly IModel _channel;
     private readonly IConnection _connection;
 
     public RabbitMqProductUpdateConsumer(IConfiguration configuration, IDistributedCache cache, ILogger<RabbitMqProductUpdateConsumer> logger)
@@ -23,6 +23,11 @@ public class RabbitMqProductUpdateConsumer : IRabbitMqProductUpdateConsumer, IDi
         _cache = cache;
         _logger = logger;
 
+        Console.WriteLine($"RabbitMQ HostName: {_configuration["RabbitMQ_HostName"]}");
+        Console.WriteLine($"RabbitMQ Port: {_configuration["RabbitMQ_Port"]}");
+        Console.WriteLine($"RabbitMQ UserName: {_configuration["RabbitMQ_UserName"]}");
+        Console.WriteLine($"RabbitMQ Password: {_configuration["RabbitMQ_Password"]}");
+        
         var hostName = _configuration["RabbitMQ_HostName"];
         var port = _configuration["RabbitMQ_Port"];
         var username = _configuration["RabbitMQ_UserName"];
@@ -31,15 +36,15 @@ public class RabbitMqProductUpdateConsumer : IRabbitMqProductUpdateConsumer, IDi
         var connectionFactory = new ConnectionFactory
         {
             HostName = hostName,
-            Port = int.Parse(port),
+            Port = int.Parse(port.Contains(':') ? port.Split(':').Last() : port),
             UserName = username,
             Password = password,
         };
-        _connection = connectionFactory.CreateConnectionAsync().Result;
-        _channel = _connection.CreateChannelAsync().Result;
+        _connection = connectionFactory.CreateConnection();
+        _channel = _connection.CreateModel();
     }
 
-    public async Task ConsumeAsync()
+    public void Consume()
     {
         var queueName = "orders.product.update.queue";
 
@@ -51,14 +56,14 @@ public class RabbitMqProductUpdateConsumer : IRabbitMqProductUpdateConsumer, IDi
         };
         
         var exchangeName = _configuration["RabbitMQ_Products_Exchange"]!;
-        await _channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Headers, durable: true);
+        _channel.ExchangeDeclare(exchangeName, ExchangeType.Headers, durable: true);
         
-        await _channel.QueueDeclareAsync(queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
-        await _channel.QueueBindAsync(queueName, exchangeName, string.Empty, arguments: headers);
+        _channel.QueueDeclare(queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+        _channel.QueueBind(queueName, exchangeName, string.Empty, arguments: headers);
         
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
-        consumer.ReceivedAsync += async (sender, args) => {
+        consumer.Received += async (sender, args) => {
             var bodyArr = args.Body.ToArray();
             var message = Encoding.UTF8.GetString(bodyArr);
             
@@ -82,7 +87,7 @@ public class RabbitMqProductUpdateConsumer : IRabbitMqProductUpdateConsumer, IDi
             }
         };
         
-        await _channel.BasicConsumeAsync(queueName, autoAck: true, consumer);
+        _channel.BasicConsume(queueName, autoAck: true, consumer);
     }
 
     public void Dispose()

@@ -1,0 +1,127 @@
+services:
+  mongodb-container:
+    image: ecommerce-mongodb:latest
+    build:
+      context: ./mongodb
+      dockerfile: Dockerfile
+    ports:
+      - "27017:27017"
+    networks:
+      - ecommerce
+
+  postgres-container:
+    image: ecommerce-postgres:latest
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: db
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ecommerce
+    networks:
+      - ecommerce
+  redis-container:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - ecommerce
+
+  apigateway:
+    image: apigateway:latest
+    build:
+      context: ./src/ECommerce.OrderService
+      dockerfile: ApiGateway/Dockerfile
+    ports:
+      - "5001:8080"
+    networks:
+      - ecommerce
+    depends_on:
+      - orders-microservice
+      - users-microservice
+      - products-microservice
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - ecommerce
+
+  users-microservice:
+    image: users-microservice:latest
+    build:
+      context: ./src/ECommerce.UserService
+      dockerfile: ECommerce.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      POSTGRES_HOST: postgres-container
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ecommerce
+      POSTGRES_USERNAME: db
+      POSTGRES_PASSWORD: 1234
+      RabbitMQ_HostName: rabbitmq
+      RabbitMQ_Port: 5672
+      RabbitMQ_UserName: guest
+      RabbitMQ_Password: guest
+      RabbitMQ_Users_Exchange: users.exchange
+    depends_on:
+      - postgres-container
+    networks:
+      - ecommerce
+
+  products-microservice:
+    image: products-microservice:latest
+    build:
+      context: ./src/ECommerce.ProductService
+      dockerfile: ECommerce.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      POSTGRES_HOST: postgres-container
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ecommerce
+      POSTGRES_USERNAME: db
+      POSTGRES_PASSWORD: 1234
+      RabbitMQ_HostName: rabbitmq
+      RabbitMQ_Port: 5672
+      RabbitMQ_UserName: guest
+      RabbitMQ_Password: guest
+      RabbitMQ_Products_Exchange: products.exchange
+    depends_on:
+      - postgres-container
+    networks:
+      - ecommerce
+
+  orders-microservice:
+    image: orders-microservice:latest
+    build:
+      context: ./src/ECommerce.OrderService
+      dockerfile: ECommerce.Api/Dockerfile
+    environment:
+      MONGODB_HOST: mongodb-container
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: OrdersDatabase
+      REDIS_HOST: redis-container
+      REDIS_PORT: 6379
+      UsersMicroserviceName: apigateway
+      UsersMicroservicePort: 8080
+      ProductsMicroserviceName: apigateway
+      ProductsMicroservicePort: 8080
+      RabbitMQ_HostName: rabbitmq
+      RabbitMQ_Port: 5672
+      RabbitMQ_UserName: guest
+      RabbitMQ_Password: guest
+      RabbitMQ_Products_Exchange: products.exchange
+    depends_on:
+      - mongodb-container
+      - rabbitmq
+      - redis-container
+    networks:
+      - ecommerce
+
+networks:
+  ecommerce:
+    driver: bridge

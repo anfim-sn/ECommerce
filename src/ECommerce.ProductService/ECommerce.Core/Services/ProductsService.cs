@@ -56,7 +56,7 @@ internal class ProductsService(IProductRepository productRepository, IRabbitMQPu
             {"RowCount", 1},
         };
         
-        await rabbitMQPublisher.PublishAsync<Product>(headers, product);
+        rabbitMQPublisher.Publish<Product>(headers, product);
         
         return mapper.Map<ProductResponse>(productRequest) with { IsSuccess = isSuccess };
     }
@@ -74,7 +74,7 @@ internal class ProductsService(IProductRepository productRepository, IRabbitMQPu
             };
             var message = new ProductDeleteMessage(id);
 
-            await rabbitMQPublisher.PublishAsync<ProductDeleteMessage>(headers, message);
+            rabbitMQPublisher.Publish<ProductDeleteMessage>(headers, message);
         }
         
         return isSuccess;

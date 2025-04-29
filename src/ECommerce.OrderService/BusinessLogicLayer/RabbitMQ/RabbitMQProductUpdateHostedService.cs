@@ -4,14 +4,15 @@ namespace BusinessLogicLayer.RabbitMQ;
 
 public class RabbitMQProductUpdateHostedService(IRabbitMqProductUpdateConsumer rabbitMqProductUpdateConsumer) : IHostedService
 {
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        await rabbitMqProductUpdateConsumer.ConsumeAsync();
+        rabbitMqProductUpdateConsumer.Consume();
+        return Task.CompletedTask;
     }
     
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public Task StopAsync(CancellationToken cancellationToken)
     {
         rabbitMqProductUpdateConsumer.Dispose();
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 }

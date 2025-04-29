@@ -2,6 +2,6 @@ namespace BusinessLogicLayer.RabbitMQ;
 
 public interface IRabbitMqProductUpdateConsumer
 {
-    Task ConsumeAsync();
+    void Consume();
     void Dispose();
 }
